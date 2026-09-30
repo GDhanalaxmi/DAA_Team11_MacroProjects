@@ -1,0 +1,2967 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>0/1 Knapsack Branch & Bound Visualizer</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        header {
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 25px auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            width: 110px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .run {
+            background: #2563eb;
+            color: white;
+        }
+
+        .sample {
+            background: #16a34a;
+            color: white;
+        }
+
+        .reset {
+            background: #dc2626;
+            color: white;
+        }
+
+        .next {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .auto {
+            background: #ea580c;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #eff6ff;
+        }
+
+        td input {
+            width: 90px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            padding: 18px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .card p {
+            font-size: 25px;
+            margin: 8px 0 0;
+            font-weight: bold;
+        }
+
+        .blue {
+            background: #2563eb;
+        }
+
+        .green {
+            background: #16a34a;
+        }
+
+        .orange {
+            background: #ea580c;
+        }
+
+        .purple {
+            background: #7c3aed;
+        }
+
+        #treeContainer {
+            overflow: auto;
+            min-height: 500px;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background: #f8fafc;
+            padding: 20px;
+        }
+
+        svg {
+            min-width: 1100px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node circle {
+            stroke: #172033;
+            stroke-width: 2;
+        }
+
+        .node text {
+            font-size: 12px;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        .edge {
+            stroke: #64748b;
+            stroke-width: 2;
+        }
+
+        .edge-label {
+            font-size: 11px;
+            fill: #475569;
+            font-weight: bold;
+        }
+
+        .included circle {
+            fill: #bbf7d0;
+        }
+
+        .excluded circle {
+            fill: #dbeafe;
+        }
+
+        .pruned circle {
+            fill: #fecaca;
+        }
+
+        .best circle {
+            fill: #fde68a;
+            stroke: #ca8a04;
+            stroke-width: 4;
+        }
+
+        .current circle {
+            stroke: #2563eb;
+            stroke-width: 5;
+            filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.7));
+        }
+
+        .legend {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid #555;
+        }
+
+        .green-box {
+            background: #bbf7d0;
+        }
+
+        .blue-box {
+            background: #dbeafe;
+        }
+
+        .red-box {
+            background: #fecaca;
+        }
+
+        .yellow-box {
+            background: #fde68a;
+        }
+
+        .current-box {
+            background: white;
+            border: 4px solid #2563eb;
+        }
+
+        .log {
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .log div {
+            padding: 5px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .step-info {
+            background: #eff6ff;
+            border-left: 5px solid #2563eb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .step-info h3 {
+            margin-top: 0;
+        }
+
+        .algorithm-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            background: #e2e8f0;
+        }
+
+        .status.ready {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status.running {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        @media (max-width: 800px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>0/1 Knapsack Branch & Bound</h1>
+
+    <p>
+        Interactive Step-by-Step Bounding, Branching and Pruning Visualization
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- INPUT SECTION -->
+
+    <div class="panel">
+
+        <h2>Knapsack Configuration</h2>
+
+        <div class="controls">
+
+            <div class="field">
+
+                <label>Knapsack Capacity</label>
+
+                <input
+                    id="capacity"
+                    type="number"
+                    value="10"
+                    min="1"
+                >
+
+            </div>
+
+
+            <button
+                class="sample"
+                onclick="loadSample()"
+            >
+                Load Sample
+            </button>
+
+
+            <button
+                class="run"
+                onclick="runAlgorithm()"
+            >
+                ▶ Prepare Algorithm
+            </button>
+
+
+            <button
+                class="next"
+                onclick="nextStep()"
+            >
+                ➜ Next Step
+            </button>
+
+
+            <button
+                class="auto"
+                onclick="autoRun()"
+            >
+                ▶ Auto Run
+            </button>
+
+
+            <button
+                class="reset"
+                onclick="resetAll()"
+            >
+                Reset
+            </button>
+
+        </div>
+
+
+        <div class="algorithm-info">
+
+            <b>How to use:</b>
+
+            <ol>
+
+                <li>Enter capacity and item details.</li>
+
+                <li>Click <b>Prepare Algorithm</b>.</li>
+
+                <li>Click <b>Next Step</b> to execute manually.</li>
+
+                <li>Or click <b>Auto Run</b> for automatic animation.</li>
+
+            </ol>
+
+            <span id="status" class="status">
+                Waiting
+            </span>
+
+        </div>
+
+
+        <h3>Items</h3>
+
+
+        <table id="itemTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>Item</th>
+
+                    <th>Weight</th>
+
+                    <th>Profit</th>
+
+                    <th>Profit / Weight</th>
+
+                    <th>Remove</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="itemsBody"></tbody>
+
+        </table>
+
+
+        <br>
+
+
+        <button
+            class="run"
+            onclick="addItem()"
+        >
+            + Add Item
+        </button>
+
+    </div>
+
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary">
+
+
+        <div class="card blue">
+
+            <h3>Capacity</h3>
+
+            <p id="capacityResult">
+                10
+            </p>
+
+        </div>
+
+
+        <div class="card green">
+
+            <h3>Maximum Profit</h3>
+
+            <p id="maxProfit">
+                0
+            </p>
+
+        </div>
+
+
+        <div class="card orange">
+
+            <h3>Selected Weight</h3>
+
+            <p id="selectedWeight">
+                0
+            </p>
+
+        </div>
+
+
+        <div class="card purple">
+
+            <h3>Nodes Visible</h3>
+
+            <p id="nodesGenerated">
+                0
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- STEP INFORMATION -->
+
+    <div class="panel">
+
+        <h2>Current Step</h2>
+
+        <div
+            id="stepInfo"
+            class="step-info"
+        >
+
+            <h3>
+                Waiting for algorithm
+            </h3>
+
+            <p>
+                Click <b>Prepare Algorithm</b> to begin.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SELECTED ITEMS -->
+
+    <div class="panel">
+
+        <h2>Optimal Solution</h2>
+
+        <p id="selectedItems">
+
+            Run the algorithm to see the selected items.
+
+        </p>
+
+    </div>
+
+
+
+    <!-- TREE -->
+
+    <div class="panel">
+
+        <h2>Branch-and-Bound Tree</h2>
+
+
+        <p>
+
+            <b>Green:</b> Included branch
+
+            &nbsp;&nbsp;
+
+            <b>Blue:</b> Excluded branch
+
+            &nbsp;&nbsp;
+
+            <b>Red:</b> Pruned node
+
+            &nbsp;&nbsp;
+
+            <b>Yellow:</b> Best solution
+
+            &nbsp;&nbsp;
+
+            <b>Blue Border:</b> Current node
+
+        </p>
+
+
+        <div id="treeContainer">
+
+            <svg
+                id="tree"
+                width="1200"
+                height="600"
+            ></svg>
+
+        </div>
+
+
+        <div class="legend">
+
+
+            <div class="legend-item">
+
+                <div class="box green-box"></div>
+
+                Included
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div class="box blue-box"></div>
+
+                Excluded
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div class="box red-box"></div>
+
+                Pruned
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div class="box yellow-box"></div>
+
+                Best
+
+            </div>
+
+
+            <div class="legend-item">
+
+                <div class="box current-box"></div>
+
+                Current
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- LOG -->
+
+    <div class="panel">
+
+        <h2>Algorithm Execution</h2>
+
+        <div
+            id="log"
+            class="log"
+        >
+
+            <div>
+                Waiting for input...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+
+let items = [
+
+    {
+        id: 1,
+        weight: 2,
+        profit: 40
+    },
+
+    {
+        id: 2,
+        weight: 3,
+        profit: 50
+    },
+
+    {
+        id: 3,
+        weight: 5,
+        profit: 100
+    },
+
+    {
+        id: 4,
+        weight: 4,
+        profit: 70
+    }
+
+];
+
+
+let nodes = [];
+
+let bestProfit = 0;
+
+let bestWeight = 0;
+
+let bestItems = [];
+
+let nodeCounter = 0;
+
+let stepIndex = 0;
+
+let executionSteps = [];
+
+let autoRunning = false;
+
+
+
+/* =====================================================
+   DISPLAY ITEMS
+===================================================== */
+
+
+function displayItems() {
+
+    const body =
+        document.getElementById("itemsBody");
+
+    body.innerHTML = "";
+
+
+    items.forEach((item, index) => {
+
+        const ratio =
+            item.profit / item.weight;
+
+
+        body.innerHTML += `
+
+            <tr>
+
+                <td>
+                    Item ${item.id}
+                </td>
+
+
+                <td>
+
+                    <input
+                        type="number"
+                        value="${item.weight}"
+                        min="1"
+                        onchange="updateWeight(${index}, this.value)"
+                    >
+
+                </td>
+
+
+                <td>
+
+                    <input
+                        type="number"
+                        value="${item.profit}"
+                        min="1"
+                        onchange="updateProfit(${index}, this.value)"
+                    >
+
+                </td>
+
+
+                <td>
+
+                    ${ratio.toFixed(2)}
+
+                </td>
+
+
+                <td>
+
+                    <button
+                        class="reset"
+                        onclick="removeItem(${index})"
+                    >
+                        Remove
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+}
+
+
+
+/* =====================================================
+   UPDATE ITEM
+===================================================== */
+
+
+function updateWeight(index, value) {
+
+    items[index].weight =
+        Number(value);
+
+    displayItems();
+
+}
+
+
+function updateProfit(index, value) {
+
+    items[index].profit =
+        Number(value);
+
+    displayItems();
+
+}
+
+
+
+/* =====================================================
+   ADD ITEM
+===================================================== */
+
+
+function addItem() {
+
+    const id =
+        items.length + 1;
+
+
+    items.push({
+
+        id: id,
+
+        weight: 2,
+
+        profit: 20
+
+    });
+
+
+    displayItems();
+
+}
+
+
+
+/* =====================================================
+   REMOVE ITEM
+===================================================== */
+
+
+function removeItem(index) {
+
+    if (items.length <= 1) {
+
+        alert(
+            "At least one item is required."
+        );
+
+        return;
+
+    }
+
+
+    items.splice(index, 1);
+
+
+    items.forEach((item, i) => {
+
+        item.id = i + 1;
+
+    });
+
+
+    displayItems();
+
+}
+
+
+
+/* =====================================================
+   CALCULATE BOUND
+===================================================== */
+
+
+function calculateBound(
+    index,
+    currentWeight,
+    currentProfit,
+    capacity
+) {
+
+    if (currentWeight > capacity) {
+
+        return 0;
+
+    }
+
+
+    let weight =
+        currentWeight;
+
+    let profit =
+        currentProfit;
+
+
+    let i =
+        index;
+
+
+    /*
+       Take complete items
+    */
+
+    while (
+        i < items.length &&
+        weight + items[i].weight <= capacity
+    ) {
+
+        weight +=
+            items[i].weight;
+
+        profit +=
+            items[i].profit;
+
+        i++;
+
+    }
+
+
+    /*
+       Take fractional part
+       for upper bound
+    */
+
+    if (i < items.length) {
+
+        const remaining =
+            capacity - weight;
+
+
+        profit +=
+            remaining *
+            (
+                items[i].profit /
+                items[i].weight
+            );
+
+    }
+
+
+    return profit;
+
+}
+
+
+
+/* =====================================================
+   PREPARE ALGORITHM
+===================================================== */
+
+
+function runAlgorithm() {
+
+    const capacity =
+        Number(
+            document.getElementById(
+                "capacity"
+            ).value
+        );
+
+
+    if (capacity <= 0) {
+
+        alert(
+            "Capacity must be greater than 0."
+        );
+
+        return;
+
+    }
+
+
+    if (items.length === 0) {
+
+        alert(
+            "Add at least one item."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Validate items
+    */
+
+    for (const item of items) {
+
+        if (
+            item.weight <= 0 ||
+            item.profit <= 0
+        ) {
+
+            alert(
+                "Weight and profit must be greater than 0."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /*
+       Sort items by profit/weight
+    */
+
+    items.sort(
+        (a, b) =>
+            (b.profit / b.weight) -
+            (a.profit / a.weight)
+    );
+
+
+    /*
+       Reset algorithm state
+    */
+
+    nodes = [];
+
+    executionSteps = [];
+
+    stepIndex = 0;
+
+    bestProfit = 0;
+
+    bestWeight = 0;
+
+    bestItems = [];
+
+    nodeCounter = 0;
+
+    autoRunning = false;
+
+
+    const log =
+        document.getElementById("log");
+
+    log.innerHTML = "";
+
+
+    addLog(
+        "========================================"
+    );
+
+    addLog(
+        "BRANCH AND BOUND INITIALIZED"
+    );
+
+    addLog(
+        "========================================"
+    );
+
+    addLog(
+        "Capacity = " + capacity
+    );
+
+    addLog(
+        "Items sorted by Profit / Weight ratio."
+    );
+
+
+    /*
+       Display sorted items
+    */
+
+    displayItems();
+
+
+    /*
+       Generate complete execution sequence
+    */
+
+    generateSteps(
+
+        0,
+
+        0,
+
+        0,
+
+        [],
+
+        capacity,
+
+        null,
+
+        "root"
+
+    );
+
+
+    /*
+       Initially all nodes hidden
+    */
+
+    nodes.forEach(node => {
+
+        node.visible = false;
+
+        node.current = false;
+
+    });
+
+
+    /*
+       Show root
+    */
+
+    if (nodes.length > 0) {
+
+        nodes[0].visible = true;
+
+    }
+
+
+    /*
+       Update status
+    */
+
+    const status =
+        document.getElementById("status");
+
+    status.textContent =
+        "Ready - Press Next Step";
+
+    status.className =
+        "status ready";
+
+
+    /*
+       Reset results
+    */
+
+    document.getElementById(
+        "capacityResult"
+    ).textContent = capacity;
+
+
+    document.getElementById(
+        "maxProfit"
+    ).textContent = "0";
+
+
+    document.getElementById(
+        "selectedWeight"
+    ).textContent = "0";
+
+
+    document.getElementById(
+        "nodesGenerated"
+    ).textContent = "1";
+
+
+    document.getElementById(
+        "selectedItems"
+    ).innerHTML =
+        "Press <b>Next Step</b> to start.";
+
+
+    document.getElementById(
+        "stepInfo"
+    ).innerHTML = `
+
+        <h3>Root Node Created</h3>
+
+        <p>
+            Profit = <b>0</b>,
+            Weight = <b>0</b>.
+        </p>
+
+        <p>
+            Click <b>Next Step</b> to continue.
+        </p>
+
+    `;
+
+
+    drawTree();
+
+}
+
+
+
+/* =====================================================
+   GENERATE EXECUTION STEPS
+===================================================== */
+
+
+function generateSteps(
+
+    index,
+
+    currentWeight,
+
+    currentProfit,
+
+    selected,
+
+    capacity,
+
+    parent,
+
+    branch
+
+) {
+
+
+    /*
+       Calculate upper bound
+    */
+
+    const bound =
+        calculateBound(
+
+            index,
+
+            currentWeight,
+
+            currentProfit,
+
+            capacity
+
+        );
+
+
+    /*
+       Create node
+    */
+
+    const node = {
+
+        id:
+            ++nodeCounter,
+
+        index:
+            index,
+
+        weight:
+            currentWeight,
+
+        profit:
+            currentProfit,
+
+        bound:
+            bound,
+
+        selected:
+            [...selected],
+
+        parent:
+            parent,
+
+        branch:
+            branch,
+
+        status:
+            "normal",
+
+        visible:
+            false,
+
+        current:
+            false
+
+    };
+
+
+    nodes.push(node);
+
+
+    /*
+       Node visit step
+    */
+
+    executionSteps.push({
+
+        type:
+            "visit",
+
+        nodeId:
+            node.id,
+
+        message:
+            `Node ${node.id}: ` +
+            `Profit=${currentProfit}, ` +
+            `Weight=${currentWeight}, ` +
+            `Bound=${bound.toFixed(2)}`
+
+    });
+
+
+    /*
+       Capacity violation
+    */
+
+    if (currentWeight > capacity) {
+
+        node.status =
+            "pruned";
+
+
+        executionSteps.push({
+
+            type:
+                "prune",
+
+            nodeId:
+                node.id,
+
+            message:
+                `Node ${node.id}: ` +
+                `Weight ${currentWeight} > ` +
+                `Capacity ${capacity} → PRUNED`
+
+        });
+
+
+        return;
+
+    }
+
+
+    /*
+       Update best solution
+    */
+
+    if (currentProfit > bestProfit) {
+
+        bestProfit =
+            currentProfit;
+
+        bestWeight =
+            currentWeight;
+
+        bestItems =
+            [...selected];
+
+
+        executionSteps.push({
+
+            type:
+                "best",
+
+            nodeId:
+                node.id,
+
+            message:
+                `Node ${node.id}: ` +
+                `NEW BEST → Profit = ${bestProfit}`
+
+        });
+
+    }
+
+
+    /*
+       No more items
+    */
+
+    if (index >= items.length) {
+
+        executionSteps.push({
+
+            type:
+                "leaf",
+
+            nodeId:
+                node.id,
+
+            message:
+                `Node ${node.id}: ` +
+                `Leaf node reached.`
+
+        });
+
+
+        return;
+
+    }
+
+
+    /*
+       Bound pruning
+    */
+
+    if (bound <= bestProfit) {
+
+        node.status =
+            "pruned";
+
+
+        executionSteps.push({
+
+            type:
+                "prune",
+
+            nodeId:
+                node.id,
+
+            message:
+                `Node ${node.id}: ` +
+                `Bound ${bound.toFixed(2)} <= ` +
+                `Best ${bestProfit} → PRUNED`
+
+        });
+
+
+        return;
+
+    }
+
+
+    /*
+       Current item
+    */
+
+    const item =
+        items[index];
+
+
+    /*
+       INCLUDE
+    */
+
+    executionSteps.push({
+
+        type:
+            "branch",
+
+        nodeId:
+            node.id,
+
+        branch:
+            "include",
+
+        message:
+            `Node ${node.id}: ` +
+            `Include Item ${item.id}`
+
+    });
+
+
+    generateSteps(
+
+        index + 1,
+
+        currentWeight +
+            item.weight,
+
+        currentProfit +
+            item.profit,
+
+        [
+            ...selected,
+            item.id
+        ],
+
+        capacity,
+
+        node.id,
+
+        "include"
+
+    );
+
+
+    /*
+       EXCLUDE
+    */
+
+    executionSteps.push({
+
+        type:
+            "branch",
+
+        nodeId:
+            node.id,
+
+        branch:
+            "exclude",
+
+        message:
+            `Node ${node.id}: ` +
+            `Exclude Item ${item.id}`
+
+    });
+
+
+    generateSteps(
+
+        index + 1,
+
+        currentWeight,
+
+        currentProfit,
+
+        [...selected],
+
+        capacity,
+
+        node.id,
+
+        "exclude"
+
+    );
+
+}
+
+
+
+/* =====================================================
+   NEXT STEP
+===================================================== */
+
+
+function nextStep() {
+
+    if (
+        executionSteps.length === 0
+    ) {
+
+        alert(
+            "Click Prepare Algorithm first."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        stepIndex >=
+        executionSteps.length
+    ) {
+
+        finishAlgorithm();
+
+        return;
+
+    }
+
+
+    /*
+       Remove current highlight
+    */
+
+    nodes.forEach(node => {
+
+        node.current = false;
+
+    });
+
+
+    /*
+       Get current step
+    */
+
+    const step =
+        executionSteps[stepIndex];
+
+
+    const node =
+        nodes.find(
+            n => n.id === step.nodeId
+        );
+
+
+    /*
+       Make node visible
+    */
+
+    if (node) {
+
+        node.visible = true;
+
+        node.current = true;
+
+    }
+
+
+    /*
+       Handle step
+    */
+
+    if (
+        step.type === "prune"
+    ) {
+
+        if (node) {
+
+            node.status =
+                "pruned";
+
+        }
+
+    }
+
+
+    if (
+        step.type === "best"
+    ) {
+
+        if (node) {
+
+            node.status =
+                "best";
+
+        }
+
+    }
+
+
+    /*
+       Add log
+    */
+
+    addLog(
+        `Step ${stepIndex + 1}: ${step.message}`
+    );
+
+
+    /*
+       Branch explanation
+    */
+
+    if (
+        step.type === "branch"
+    ) {
+
+        addLog(
+            "   └── " +
+            step.branch.toUpperCase() +
+            " branch selected"
+        );
+
+    }
+
+
+    /*
+       Step explanation
+    */
+
+    showStepExplanation(
+        step,
+        node
+    );
+
+
+    /*
+       Update summary
+    */
+
+    updateSummary();
+
+
+    /*
+       Draw tree
+    */
+
+    drawTree();
+
+
+    stepIndex++;
+
+
+    /*
+       Completion
+    */
+
+    if (
+        stepIndex >=
+        executionSteps.length
+    ) {
+
+        setTimeout(
+            finishAlgorithm,
+            300
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   STEP EXPLANATION
+===================================================== */
+
+
+function showStepExplanation(
+    step,
+    node
+) {
+
+    const info =
+        document.getElementById(
+            "stepInfo"
+        );
+
+
+    if (!node) {
+
+        return;
+
+    }
+
+
+    let title =
+        "Processing Node " +
+        node.id;
+
+
+    let explanation =
+        "";
+
+
+    if (
+        step.type === "visit"
+    ) {
+
+        explanation = `
+
+            <p>
+                The algorithm is visiting
+                <b>Node ${node.id}</b>.
+            </p>
+
+            <p>
+                Current Profit:
+                <b>${node.profit}</b>
+            </p>
+
+            <p>
+                Current Weight:
+                <b>${node.weight}</b>
+            </p>
+
+            <p>
+                Upper Bound:
+                <b>${node.bound.toFixed(2)}</b>
+            </p>
+
+        `;
+
+    }
+
+
+    else if (
+        step.type === "best"
+    ) {
+
+        title =
+            "⭐ New Best Solution";
+
+
+        explanation = `
+
+            <p>
+                Node ${node.id} provides a
+                better solution.
+            </p>
+
+            <p>
+                Profit =
+                <b>${node.profit}</b>
+            </p>
+
+            <p>
+                Weight =
+                <b>${node.weight}</b>
+            </p>
+
+            <p>
+                Selected Items:
+                <b>
+                    ${
+                        node.selected.length
+                        ? node.selected.join(", ")
+                        : "None"
+                    }
+                </b>
+            </p>
+
+        `;
+
+    }
+
+
+    else if (
+        step.type === "prune"
+    ) {
+
+        title =
+            "✂ Node Pruned";
+
+
+        explanation = `
+
+            <p>
+                Node ${node.id} is removed
+                from further exploration.
+            </p>
+
+            <p>
+                Profit =
+                <b>${node.profit}</b>
+            </p>
+
+            <p>
+                Weight =
+                <b>${node.weight}</b>
+            </p>
+
+            <p>
+                Bound =
+                <b>${node.bound.toFixed(2)}</b>
+            </p>
+
+            <p>
+                This branch cannot produce
+                a better valid solution.
+            </p>
+
+        `;
+
+    }
+
+
+    else if (
+        step.type === "branch"
+    ) {
+
+        title =
+            step.branch === "include"
+            ? "🟢 Include Branch"
+            : "🔵 Exclude Branch";
+
+
+        explanation = `
+
+            <p>
+                The algorithm is creating the
+                <b>${step.branch}</b> branch.
+            </p>
+
+            <p>
+                Parent Node:
+                <b>${node.id}</b>
+            </p>
+
+            <p>
+                Next decision:
+                ${
+                    step.branch === "include"
+                    ? "Take the current item."
+                    : "Do not take the current item."
+                }
+            </p>
+
+        `;
+
+    }
+
+
+    else if (
+        step.type === "leaf"
+    ) {
+
+        title =
+            "Leaf Node";
+
+
+        explanation = `
+
+            <p>
+                There are no more items
+                to consider.
+            </p>
+
+            <p>
+                Final Profit:
+                <b>${node.profit}</b>
+            </p>
+
+            <p>
+                Final Weight:
+                <b>${node.weight}</b>
+            </p>
+
+        `;
+
+    }
+
+
+    info.innerHTML = `
+
+        <h3>${title}</h3>
+
+        ${explanation}
+
+    `;
+
+}
+
+
+
+/* =====================================================
+   AUTO RUN
+===================================================== */
+
+
+function autoRun() {
+
+    if (
+        executionSteps.length === 0
+    ) {
+
+        alert(
+            "Click Prepare Algorithm first."
+        );
+
+        return;
+
+    }
+
+
+    if (autoRunning) {
+
+        return;
+
+    }
+
+
+    autoRunning = true;
+
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    status.textContent =
+        "Running...";
+
+    status.className =
+        "status running";
+
+
+    function play() {
+
+        if (
+            stepIndex >=
+            executionSteps.length
+        ) {
+
+            autoRunning = false;
+
+            finishAlgorithm();
+
+            return;
+
+        }
+
+
+        nextStep();
+
+
+        setTimeout(
+            play,
+            900
+        );
+
+    }
+
+
+    play();
+
+}
+
+
+
+/* =====================================================
+   FINISH
+===================================================== */
+
+
+function finishAlgorithm() {
+
+    autoRunning = false;
+
+
+    nodes.forEach(node => {
+
+        node.current = false;
+
+    });
+
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    status.textContent =
+        "Completed";
+
+    status.className =
+        "status completed";
+
+
+    updateSummary();
+
+
+    document.getElementById(
+        "selectedItems"
+    ).innerHTML =
+
+        bestItems.length === 0
+
+        ?
+
+        "No items selected."
+
+        :
+
+        "Selected Items: <b>" +
+        bestItems.join(", ") +
+        "</b>";
+
+
+    document.getElementById(
+        "stepInfo"
+    ).innerHTML = `
+
+        <h3>✅ Algorithm Completed</h3>
+
+        <p>
+            Maximum Profit:
+            <b>${bestProfit}</b>
+        </p>
+
+        <p>
+            Selected Weight:
+            <b>${bestWeight}</b>
+        </p>
+
+        <p>
+            Selected Items:
+            <b>
+                ${
+                    bestItems.length
+                    ? bestItems.join(", ")
+                    : "None"
+                }
+            </b>
+        </p>
+
+    `;
+
+
+    addLog("");
+
+    addLog(
+        "========================================"
+    );
+
+    addLog(
+        "✓ BRANCH AND BOUND COMPLETED"
+    );
+
+    addLog(
+        "Maximum Profit = " +
+        bestProfit
+    );
+
+    addLog(
+        "Selected Weight = " +
+        bestWeight
+    );
+
+    addLog(
+        "Selected Items = " +
+        (
+            bestItems.length
+            ? bestItems.join(", ")
+            : "None"
+        )
+    );
+
+    addLog(
+        "========================================"
+    );
+
+
+    drawTree();
+
+}
+
+
+
+/* =====================================================
+   UPDATE SUMMARY
+===================================================== */
+
+
+function updateSummary() {
+
+    document.getElementById(
+        "maxProfit"
+    ).textContent =
+        bestProfit;
+
+
+    document.getElementById(
+        "selectedWeight"
+    ).textContent =
+        bestWeight;
+
+
+    document.getElementById(
+        "nodesGenerated"
+    ).textContent =
+
+        nodes.filter(
+            n => n.visible
+        ).length;
+
+}
+
+
+
+/* =====================================================
+   DRAW TREE
+===================================================== */
+
+
+function drawTree() {
+
+    const svg =
+        document.getElementById(
+            "tree"
+        );
+
+
+    svg.innerHTML = "";
+
+
+    const visibleNodes =
+        nodes.filter(
+            node => node.visible
+        );
+
+
+    if (
+        visibleNodes.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Group nodes according to level
+    */
+
+    const levelGroups = {};
+
+
+    visibleNodes.forEach(
+        node => {
+
+            const level =
+                node.index;
+
+
+            if (
+                !levelGroups[level]
+            ) {
+
+                levelGroups[level] = [];
+
+            }
+
+
+            levelGroups[level].push(
+                node
+            );
+
+        }
+    );
+
+
+    const levels =
+        Object.keys(levelGroups)
+            .map(Number)
+            .sort(
+                (a, b) => a - b
+            );
+
+
+    const positions = {};
+
+
+    const levelHeight =
+        140;
+
+
+    const maxNodes =
+        Math.max(
+            ...levels.map(
+                level =>
+                    levelGroups[level].length
+            )
+        );
+
+
+    const width =
+        Math.max(
+            1200,
+            maxNodes * 180
+        );
+
+
+    svg.setAttribute(
+        "width",
+        width
+    );
+
+
+    svg.setAttribute(
+        "height",
+        (levels.length + 1) *
+        levelHeight
+    );
+
+
+    /*
+       Calculate positions
+    */
+
+    levels.forEach(
+        (level, levelIndex) => {
+
+            const group =
+                levelGroups[level];
+
+
+            const spacing =
+                width /
+                (group.length + 1);
+
+
+            group.forEach(
+                (node, i) => {
+
+                    positions[node.id] = {
+
+                        x:
+                            spacing *
+                            (i + 1),
+
+                        y:
+                            70 +
+                            levelIndex *
+                            levelHeight
+
+                    };
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+       Draw edges
+    */
+
+    visibleNodes.forEach(
+        node => {
+
+            if (
+                node.parent === null
+            ) {
+
+                return;
+
+            }
+
+
+            const parent =
+                positions[
+                    node.parent
+                ];
+
+
+            const child =
+                positions[
+                    node.id
+                ];
+
+
+            if (
+                !parent ||
+                !child
+            ) {
+
+                return;
+
+            }
+
+
+            const line =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "line"
+                );
+
+
+            line.setAttribute(
+                "x1",
+                parent.x
+            );
+
+
+            line.setAttribute(
+                "y1",
+                parent.y + 38
+            );
+
+
+            line.setAttribute(
+                "x2",
+                child.x
+            );
+
+
+            line.setAttribute(
+                "y2",
+                child.y - 38
+            );
+
+
+            line.setAttribute(
+                "class",
+                "edge"
+            );
+
+
+            svg.appendChild(line);
+
+
+            /*
+               Edge label
+            */
+
+            const text =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "text"
+                );
+
+
+            text.setAttribute(
+                "x",
+                (parent.x + child.x) / 2
+            );
+
+
+            text.setAttribute(
+                "y",
+                (parent.y + child.y) / 2
+            );
+
+
+            text.setAttribute(
+                "class",
+                "edge-label"
+            );
+
+
+            text.textContent =
+                node.branch === "include"
+                ? "Include"
+                : "Exclude";
+
+
+            svg.appendChild(text);
+
+        }
+    );
+
+
+    /*
+       Draw nodes
+    */
+
+    visibleNodes.forEach(
+        node => {
+
+            const pos =
+                positions[node.id];
+
+
+            if (!pos) {
+
+                return;
+
+            }
+
+
+            const group =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "g"
+                );
+
+
+            let className =
+                "node";
+
+
+            /*
+               Included / excluded
+            */
+
+            if (
+                node.status === "pruned"
+            ) {
+
+                className +=
+                    " pruned";
+
+            }
+
+            else if (
+                node.status === "best"
+            ) {
+
+                className +=
+                    " best";
+
+            }
+
+            else if (
+                node.selected.length > 0
+            ) {
+
+                className +=
+                    " included";
+
+            }
+
+            else {
+
+                className +=
+                    " excluded";
+
+            }
+
+
+            /*
+               Current node
+            */
+
+            if (
+                node.current
+            ) {
+
+                className +=
+                    " current";
+
+            }
+
+
+            group.setAttribute(
+                "class",
+                className
+            );
+
+
+            /*
+               Circle
+            */
+
+            const circle =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "circle"
+                );
+
+
+            circle.setAttribute(
+                "cx",
+                pos.x
+            );
+
+
+            circle.setAttribute(
+                "cy",
+                pos.y
+            );
+
+
+            circle.setAttribute(
+                "r",
+                38
+            );
+
+
+            group.appendChild(
+                circle
+            );
+
+
+            /*
+               Profit
+            */
+
+            const text =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "text"
+                );
+
+
+            text.setAttribute(
+                "x",
+                pos.x
+            );
+
+
+            text.setAttribute(
+                "y",
+                pos.y - 12
+            );
+
+
+            text.textContent =
+                `P:${node.profit}`;
+
+
+            group.appendChild(
+                text
+            );
+
+
+            /*
+               Weight
+            */
+
+            const text2 =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "text"
+                );
+
+
+            text2.setAttribute(
+                "x",
+                pos.x
+            );
+
+
+            text2.setAttribute(
+                "y",
+                pos.y + 4
+            );
+
+
+            text2.textContent =
+                `W:${node.weight}`;
+
+
+            group.appendChild(
+                text2
+            );
+
+
+            /*
+               Bound
+            */
+
+            const text3 =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "text"
+                );
+
+
+            text3.setAttribute(
+                "x",
+                pos.x
+            );
+
+
+            text3.setAttribute(
+                "y",
+                pos.y + 20
+            );
+
+
+            text3.textContent =
+                `B:${node.bound.toFixed(1)}`;
+
+
+            group.appendChild(
+                text3
+            );
+
+
+            /*
+               Tooltip
+            */
+
+            const title =
+                document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "title"
+                );
+
+
+            title.textContent =
+                `Node ${node.id}
+Profit: ${node.profit}
+Weight: ${node.weight}
+Bound: ${node.bound.toFixed(2)}
+Selected: ${
+    node.selected.length
+    ? node.selected.join(", ")
+    : "None"
+}`;
+
+
+            group.appendChild(
+                title
+            );
+
+
+            svg.appendChild(
+                group
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   LOG
+===================================================== */
+
+
+function addLog(message) {
+
+    const log =
+        document.getElementById(
+            "log"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        message;
+
+
+    log.appendChild(
+        div
+    );
+
+
+    log.scrollTop =
+        log.scrollHeight;
+
+}
+
+
+
+/* =====================================================
+   SAMPLE
+===================================================== */
+
+
+function loadSample() {
+
+    document.getElementById(
+        "capacity"
+    ).value = 10;
+
+
+    items = [
+
+        {
+            id: 1,
+            weight: 2,
+            profit: 40
+        },
+
+        {
+            id: 2,
+            weight: 3,
+            profit: 50
+        },
+
+        {
+            id: 3,
+            weight: 5,
+            profit: 100
+        },
+
+        {
+            id: 4,
+            weight: 4,
+            profit: 70
+        }
+
+    ];
+
+
+    displayItems();
+
+
+    /*
+       Prepare but do not
+       automatically execute.
+    */
+
+    runAlgorithm();
+
+}
+
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+
+function resetAll() {
+
+    items = [
+
+        {
+            id: 1,
+            weight: 2,
+            profit: 40
+        },
+
+        {
+            id: 2,
+            weight: 3,
+            profit: 50
+        },
+
+        {
+            id: 3,
+            weight: 5,
+            profit: 100
+        },
+
+        {
+            id: 4,
+            weight: 4,
+            profit: 70
+        }
+
+    ];
+
+
+    document.getElementById(
+        "capacity"
+    ).value = 10;
+
+
+    nodes = [];
+
+    executionSteps = [];
+
+    stepIndex = 0;
+
+    bestProfit = 0;
+
+    bestWeight = 0;
+
+    bestItems = [];
+
+    nodeCounter = 0;
+
+    autoRunning = false;
+
+
+    document.getElementById(
+        "tree"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "log"
+    ).innerHTML =
+        "<div>Waiting for input...</div>";
+
+
+    document.getElementById(
+        "maxProfit"
+    ).textContent =
+        "0";
+
+
+    document.getElementById(
+        "selectedWeight"
+    ).textContent =
+        "0";
+
+
+    document.getElementById(
+        "nodesGenerated"
+    ).textContent =
+        "0";
+
+
+    document.getElementById(
+        "capacityResult"
+    ).textContent =
+        "10";
+
+
+    document.getElementById(
+        "selectedItems"
+    ).innerHTML =
+        "Run the algorithm to see the selected items.";
+
+
+    document.getElementById(
+        "stepInfo"
+    ).innerHTML = `
+
+        <h3>Waiting for algorithm</h3>
+
+        <p>
+            Click <b>Prepare Algorithm</b>
+            to begin.
+        </p>
+
+    `;
+
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    status.textContent =
+        "Waiting";
+
+    status.className =
+        "status";
+
+
+    displayItems();
+
+}
+
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+
+displayItems();
+
+</script>
+
+</body>
+
+</html>
+
