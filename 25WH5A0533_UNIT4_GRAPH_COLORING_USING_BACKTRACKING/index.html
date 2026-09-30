@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Graph Coloring Backtracking</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Graph Coloring Using Backtracking</h1>
+    <p>4-Vertex Graph • 3 Colors • Step-by-Step Visualization</p>
+</header>
+
+<div class="container">
+
+    <div class="top-cards">
+
+        <div class="card">
+            <h3>VERTICES</h3>
+            <p id="vertexCount">4</p>
+        </div>
+
+        <div class="card">
+            <h3>COLORS</h3>
+            <p id="colorCount">3</p>
+        </div>
+
+        <div class="card">
+            <h3>EDGES</h3>
+            <p id="edgeCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>STEPS</h3>
+            <p id="stepCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>BACKTRACKS</h3>
+            <p id="backtrackCount">0</p>
+        </div>
+
+    </div>
+
+
+    <div class="main">
+
+        <div class="panel">
+
+            <h2>Graph Visualization</h2>
+
+            <div id="graph">
+
+                <svg id="svgGraph"></svg>
+
+                <div class="vertex" id="A">A</div>
+                <div class="vertex" id="B">B</div>
+                <div class="vertex" id="C">C</div>
+                <div class="vertex" id="D">D</div>
+
+            </div>
+
+
+            <div class="color-list">
+
+                <div class="color-box red">
+                    Red
+                </div>
+
+                <div class="color-box green">
+                    Green
+                </div>
+
+                <div class="color-box blue">
+                    Blue
+                </div>
+
+            </div>
+
+
+            <div class="controls">
+
+                <button
+                    id="startBtn"
+                    class="primary">
+                    Start Simulation
+                </button>
+
+                <button
+                    id="playBtn"
+                    class="success-btn">
+                    Play
+                </button>
+
+                <button
+                    id="nextBtn"
+                    class="warning"
+                    disabled>
+                    Next Step
+                </button>
+
+                <button
+                    id="resetBtn"
+                    class="gray">
+                    Reset
+                </button>
+
+            </div>
+
+
+            <div class="controls">
+
+                <button
+                    id="demoBtn"
+                    class="purple">
+                    Backtracking Demo
+                </button>
+
+                <button
+                    id="randomBtn"
+                    class="primary">
+                    Random Graph
+                </button>
+
+                <button
+                    id="clearBtn"
+                    class="danger">
+                    Clear Edges
+                </button>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h3>Add Edge</h3>
+
+                <select id="addFrom">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+
+                <select id="addTo">
+                    <option value="B">B</option>
+                    <option value="A">A</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+
+                <button
+                    id="addEdgeBtn"
+                    class="success-btn">
+                    Add Edge
+                </button>
+
+            </div>
+
+
+            <div class="form-section">
+
+                <h3>Remove Edge</h3>
+
+                <select id="removeFrom">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+
+                <select id="removeTo">
+                    <option value="B">B</option>
+                    <option value="A">A</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+
+                <button
+                    id="removeEdgeBtn"
+                    class="danger">
+                    Remove Edge
+                </button>
+
+            </div>
+
+
+            <div
+                id="status"
+                class="status">
+                Status: Ready
+            </div>
+
+
+            <div class="progress-container">
+
+                <div id="progressBar"></div>
+
+            </div>
+
+
+            <div
+                id="solution"
+                class="solution">
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>Simulation Information</h2>
+
+            <div class="info-box">
+
+                <strong>Algorithm:</strong>
+                Backtracking Graph Coloring
+
+                <br><br>
+
+                <strong>Vertices:</strong>
+                A, B, C, D
+
+                <br><br>
+
+                <strong>Available Colors:</strong>
+                Red, Green, Blue
+
+                <br><br>
+
+                <strong>Goal:</strong>
+                Assign colors so that connected vertices
+                have different colors.
+
+            </div>
+
+
+            <div class="adjacency">
+
+                <h3>Adjacency List</h3>
+
+                <div id="adjacencyList"></div>
+
+            </div>
+
+
+            <div class="steps-panel">
+
+                <h2>Step Log</h2>
+
+                <div id="steps">
+
+                    <div class="step">
+                        Waiting to start...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
