@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Greedy Job Sequencing with Deadlines</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-inner">
+      <p class="eyebrow">ALGORITHM VISUALIZER</p>
+      <h1>Greedy Job Sequencing <span>with Deadlines</span></h1>
+      <p class="intro">Watch how a greedy strategy chooses profitable jobs and fits them into time slots before their deadlines.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel lesson" aria-labelledby="lesson-title">
+      <div>
+        <p class="eyebrow">THE IDEA</p>
+        <h2 id="lesson-title">Make each slot count</h2>
+        <p>Each job takes one time unit. We consider jobs from highest profit to lowest, then place each one in the latest free slot on or before its deadline. If no slot fits, we skip it.</p>
+      </div>
+      <aside class="greedy-note">
+        <strong>Why is it called Greedy?</strong>
+        <p>It always considers the highest-profit job first and tries to place it in the latest available slot before its deadline.</p>
+        <div class="note-points"><span><b>Greedy choice</b> Highest profit first</span><span><b>Goal</b> Maximize profit within deadlines</span></div>
+      </aside>
+    </section>
+
+    <section class="panel input-panel" aria-labelledby="jobs-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">1 · SET UP</p><h2 id="jobs-title">Input jobs</h2></div>
+        <button id="add-job" class="button button-light" type="button">＋ Add job</button>
+      </div>
+      <p class="helper">Edit the example or add your own jobs. Job IDs must be unique; deadline and profit must be positive whole numbers.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Job ID</th><th scope="col">Deadline</th><th scope="col">Profit</th><th scope="col"><span class="sr-only">Remove job</span></th></tr></thead>
+          <tbody id="jobs-body"></tbody>
+        </table>
+      </div>
+      <p id="input-error" class="error" role="alert" hidden></p>
+    </section>
+
+    <section class="panel flow-panel" aria-labelledby="flow-title">
+      <div class="section-heading"><div><p class="eyebrow">2 · FOLLOW THE DECISIONS</p><h2 id="flow-title">Decision path</h2></div><span class="legend"><i></i> Current step</span></div>
+      <div class="flowchart" aria-label="Algorithm decision flow">
+        <div class="flow-node" data-flow="start">Start</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="input">Input jobs</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="sort">Sort jobs by profit</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="select">Select highest-profit job</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="deadline">Check deadline</div><div class="flow-arrow">↓</div>
+        <div class="decision"><div class="flow-node diamond" data-flow="check">Time slot available?</div>
+          <div class="branches"><div class="branch yes"><span class="branch-label">YES</span><div class="flow-node" data-flow="schedule">Schedule job</div></div><div class="branch no"><span class="branch-label">NO</span><div class="flow-node" data-flow="skip">Skip job</div></div></div>
+        </div>
+        <div class="flow-arrow">↓</div><div class="flow-node" data-flow="next">Next job</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="all">All jobs processed?</div><div class="flow-arrow">↓</div>
+        <div class="flow-node" data-flow="result">Show final schedule &amp; total profit</div><div class="flow-arrow">↓</div><div class="flow-node end" data-flow="end">End</div>
+      </div>
+      <p class="flow-caption">Follow the highlighted step. The YES and NO branches show whether the current job gets a slot.</p>
+    </section>
+
+    <section class="work-grid">
+      <div class="panel run-panel" aria-labelledby="run-title">
+        <div class="section-heading"><div><p class="eyebrow">3 · RUN THE ALGORITHM</p><h2 id="run-title">Walk through it</h2></div><span id="step-count" class="step-count">Ready</span></div>
+        <div class="controls"><button id="start" class="button button-primary" type="button">Start</button><button id="next" class="button button-secondary" type="button" disabled>Next step</button><button id="auto" class="button button-light" type="button" disabled>Auto run</button><button id="reset" class="button button-light" type="button">Reset</button></div>
+        <div class="current-card" aria-live="polite"><span class="card-label">CURRENT STEP</span><p id="message">Press Start to prepare and sort the jobs.</p></div>
+        <div class="current-job-grid"><div><span class="card-label">CURRENT JOB</span><strong id="current-job">—</strong></div><div><span class="card-label">DEADLINE</span><strong id="current-deadline">—</strong></div><div><span class="card-label">PROFIT</span><strong id="current-profit">—</strong></div></div>
+        <div class="subsection"><div class="subhead"><h3>Profit-sorted jobs</h3><span class="subhint">Highest profit first</span></div><div id="sorted-jobs" class="job-chips empty">Jobs appear here when you start.</div></div>
+        <div class="subsection"><div class="subhead"><h3>Time slots</h3><span class="subhint">Each job uses one slot</span></div><div id="slots" class="slots empty">Start to create slots from the deadlines.</div></div>
+        <div class="totals"><div><span class="card-label">TOTAL PROFIT</span><strong id="total-profit">0</strong></div><div><span class="card-label">SCHEDULED JOBS</span><strong id="scheduled-count">0</strong></div></div>
+        <div class="subsection"><div class="subhead"><h3>Skipped jobs</h3><span class="subhint">No available slot</span></div><div id="skipped-jobs" class="skipped-list empty">None</div></div>
+      </div>
+      <aside class="panel result-panel" aria-labelledby="result-title">
+        <p class="eyebrow">THE OUTCOME</p><h2 id="result-title">Final schedule</h2>
+        <p class="helper">Read the slots from earliest to latest to get the job sequence.</p>
+        <div class="result-sequence" id="result-sequence" aria-live="polite">Waiting for the algorithm…</div>
+        <div class="result-total"><span>Total profit</span><strong id="final-profit">—</strong></div>
+        <div id="result-summary" class="result-summary">Your result will appear here after all jobs are processed.</div>
+        <div class="example-check" id="example-check" hidden></div>
+      </aside>
+    </section>
+    <footer>Greedy Job Sequencing · A step-by-step learning tool</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
