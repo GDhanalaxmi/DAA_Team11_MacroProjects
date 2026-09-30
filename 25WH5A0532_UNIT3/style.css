@@ -1,0 +1,1027 @@
+/* =========================================================
+   TSP DYNAMIC PROGRAMMING VISUALIZER
+   PROFESSIONAL LIGHT THEME
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+:root {
+
+    --background: #f4f7fb;
+    --white: #ffffff;
+
+    --navy: #172554;
+
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+
+    --green: #059669;
+    --green-bright: #16a34a;
+    --green-light: #ecfdf5;
+
+    --red: #dc2626;
+
+    --text: #1e293b;
+    --text-light: #64748b;
+
+    --border: #dbe3ef;
+
+    --shadow:
+        0 8px 25px rgba(15, 23, 42, 0.08);
+}
+
+
+body {
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc 0%,
+            #eef4ff 50%,
+            #f8fafc 100%
+        );
+
+    color: var(--text);
+
+    min-height: 100vh;
+
+    line-height: 1.6;
+}
+
+
+.container {
+
+    width: 92%;
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding:
+        45px 0 60px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+h1 {
+
+    text-align: center;
+
+    font-size: 42px;
+
+    font-weight: 800;
+
+    color: var(--navy);
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 5px;
+}
+
+
+h2 {
+
+    text-align: center;
+
+    font-size: 17px;
+
+    color: var(--blue);
+
+    font-weight: 600;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 40px;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+
+    background: var(--white);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 16px;
+
+    padding: 28px;
+
+    margin-bottom: 24px;
+
+    box-shadow: var(--shadow);
+
+    transition: 0.25s ease;
+}
+
+
+.card:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 12px 30px
+        rgba(15, 23, 42, 0.11);
+}
+
+
+.card h3 {
+
+    font-size: 20px;
+
+    color: var(--navy);
+
+    margin-bottom: 20px;
+
+    font-weight: 700;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.card h3::before {
+
+    content: "";
+
+    width: 5px;
+
+    height: 24px;
+
+    background:
+        var(--blue);
+
+    border-radius: 5px;
+
+    display: inline-block;
+}
+
+
+/* =========================================================
+   DISTANCE MATRIX
+   ========================================================= */
+
+#distanceMatrix {
+
+    overflow-x: auto;
+
+    margin-top: 20px;
+}
+
+
+#distanceMatrix table {
+
+    width: 100%;
+
+    border-collapse:
+        collapse;
+
+    min-width: 450px;
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+#distanceMatrix th {
+
+    background:
+        #eaf2ff;
+
+    color:
+        var(--navy);
+
+    font-weight:
+        700;
+
+    padding:
+        14px;
+
+    border:
+        1px solid var(--border);
+
+    text-align:
+        center;
+}
+
+
+#distanceMatrix td {
+
+    padding:
+        10px;
+
+    text-align:
+        center;
+
+    color:
+        var(--text);
+
+    font-weight:
+        500;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        white;
+}
+
+
+/* Matrix inputs */
+
+.matrix-input {
+
+    width:
+        75px;
+
+    padding:
+        9px;
+
+    text-align:
+        center;
+
+    border:
+        2px solid #cbd5e1;
+
+    border-radius:
+        7px;
+
+    font-size:
+        15px;
+
+    font-weight:
+        600;
+
+    color:
+        var(--text);
+
+    background:
+        white;
+
+    outline:
+        none;
+
+    transition:
+        0.2s;
+}
+
+
+.matrix-input:focus {
+
+    border-color:
+        var(--blue);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.12);
+}
+
+
+.matrix-input:disabled {
+
+    background:
+        #f1f5f9;
+
+    color:
+        #64748b;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* Matrix note */
+
+.matrix-note {
+
+    margin-top:
+        15px;
+
+    padding:
+        12px 15px;
+
+    background:
+        #f8fafc;
+
+    border:
+        1px dashed var(--border);
+
+    border-radius:
+        8px;
+
+    color:
+        var(--text-light);
+
+    font-size:
+        14px;
+}
+
+
+/* Update button */
+
+.update-button {
+
+    margin-top:
+        18px;
+
+    padding:
+        12px 24px;
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    background:
+        var(--green);
+
+    color:
+        white;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.2s;
+
+    box-shadow:
+        0 5px 12px
+        rgba(5, 150, 105, 0.20);
+}
+
+
+.update-button:hover {
+
+    background:
+        #047857;
+
+    transform:
+        translateY(-2px);
+}
+
+
+#matrixMessage {
+
+    margin-top:
+        12px;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+}
+
+
+.message-success {
+
+    color:
+        var(--green);
+}
+
+
+.message-error {
+
+    color:
+        var(--red);
+}
+
+
+/* =========================================================
+   CITY GRAPH
+   ========================================================= */
+
+#cityCanvas {
+
+    display:
+        block;
+
+    width:
+        100%;
+
+    max-width:
+        600px;
+
+    height:
+        auto;
+
+    margin:
+        10px auto 0;
+
+    background:
+        #fbfdff;
+
+    border:
+        2px solid #dbeafe;
+
+    border-radius:
+        14px;
+}
+
+
+/* =========================================================
+   DP STATE
+   ========================================================= */
+
+#state {
+
+    min-height:
+        110px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    text-align:
+        center;
+
+    padding:
+        18px;
+
+    background:
+        var(--blue-light);
+
+    border:
+        1px solid #bfdbfe;
+
+    border-radius:
+        12px;
+
+    color:
+        #1d4ed8;
+
+    font-size:
+        17px;
+
+    font-weight:
+        600;
+}
+
+
+.step-title {
+
+    font-size:
+        19px;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        7px;
+}
+
+
+.formula {
+
+    margin-top:
+        8px;
+
+    padding:
+        10px 14px;
+
+    background:
+        rgba(255, 255, 255, 0.8);
+
+    border-radius:
+        8px;
+
+    color:
+        #172554;
+}
+
+
+.formula hr {
+
+    border:
+        none;
+
+    border-top:
+        1px solid #cbd5e1;
+
+    margin:
+        8px 0;
+}
+
+
+/* =========================================================
+   DP TABLE
+   ========================================================= */
+
+#dpTable {
+
+    overflow-x:
+        auto;
+}
+
+
+#dpTable table {
+
+    width:
+        100%;
+
+    min-width:
+        550px;
+
+    border-collapse:
+        collapse;
+
+    background:
+        white;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        10px;
+
+    overflow:
+        hidden;
+}
+
+
+#dpTable th {
+
+    background:
+        var(--navy);
+
+    color:
+        white;
+
+    padding:
+        15px;
+
+    text-align:
+        center;
+
+    font-weight:
+        700;
+
+    border:
+        1px solid #334155;
+}
+
+
+#dpTable td {
+
+    padding:
+        14px;
+
+    text-align:
+        center;
+
+    color:
+        var(--text);
+
+    font-weight:
+        500;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        white;
+}
+
+
+#dpTable tr:nth-child(even) td {
+
+    background:
+        #f8fafc;
+}
+
+
+#dpTable tr:hover td {
+
+    background:
+        #eff6ff;
+}
+
+
+#dpTable td:first-child {
+
+    color:
+        var(--blue);
+
+    font-weight:
+        700;
+}
+
+
+#dpTable td:last-child {
+
+    color:
+        var(--green);
+
+    font-weight:
+        700;
+}
+
+
+.dp-empty {
+
+    padding:
+        25px;
+
+    text-align:
+        center;
+
+    color:
+        var(--text-light);
+
+    background:
+        #f8fafc;
+
+    border:
+        1px dashed var(--border);
+
+    border-radius:
+        10px;
+
+    font-weight:
+        600;
+}
+
+
+.dp-progress {
+
+    margin-bottom:
+        12px;
+
+    color:
+        var(--text-light);
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   FINAL RESULT
+   ========================================================= */
+
+.result {
+
+    text-align:
+        center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0fdf4,
+            #ffffff
+        );
+
+    border:
+        1px solid #bbf7d0;
+}
+
+
+.result h3 {
+
+    justify-content:
+        center;
+
+    color:
+        #065f46;
+}
+
+
+.result h3::before {
+
+    background:
+        var(--green-bright);
+}
+
+
+#route {
+
+    font-size:
+        26px;
+
+    font-weight:
+        800;
+
+    color:
+        var(--green-bright);
+
+    margin:
+        10px 0 15px;
+}
+
+
+#cost {
+
+    display:
+        inline-block;
+
+    padding:
+        9px 24px;
+
+    border-radius:
+        25px;
+
+    background:
+        var(--green-light);
+
+    border:
+        1px solid #86efac;
+
+    color:
+        #15803d;
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.buttons {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    flex-wrap:
+        wrap;
+
+    margin-top:
+        30px;
+}
+
+
+.buttons button {
+
+    border:
+        none;
+
+    outline:
+        none;
+
+    padding:
+        12px 22px;
+
+    border-radius:
+        9px;
+
+    color:
+        white;
+
+    background:
+        var(--blue);
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 5px 12px
+        rgba(37, 99, 235, 0.20);
+
+    transition:
+        all 0.2s ease;
+}
+
+
+.buttons button:hover {
+
+    background:
+        #1d4ed8;
+
+    transform:
+        translateY(-2px);
+}
+
+
+.buttons button:nth-child(1) {
+
+    background:
+        #475569;
+}
+
+
+.buttons button:nth-child(2) {
+
+    background:
+        var(--blue);
+}
+
+
+.buttons button:nth-child(3) {
+
+    background:
+        var(--green);
+}
+
+
+.buttons button:nth-child(4) {
+
+    background:
+        #64748b;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+
+    text-align:
+        center;
+
+    color:
+        #64748b;
+
+    padding:
+        20px 0 10px;
+
+    font-size:
+        14px;
+}
+
+
+footer span {
+
+    font-size:
+        13px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .container {
+
+        width:
+            94%;
+
+        padding-top:
+            30px;
+    }
+
+
+    h1 {
+
+        font-size:
+            31px;
+    }
+
+
+    h2 {
+
+        font-size:
+            13px;
+
+        letter-spacing:
+            1.5px;
+
+        margin-bottom:
+            30px;
+    }
+
+
+    .card {
+
+        padding:
+            20px;
+    }
+
+
+    .card h3 {
+
+        font-size:
+            18px;
+    }
+
+
+    #route {
+
+        font-size:
+            21px;
+    }
+
+
+    .matrix-input {
+
+        width:
+            60px;
+    }
+
+
+    .buttons {
+
+        gap:
+            9px;
+    }
+
+
+    .buttons button {
+
+        padding:
+            11px 16px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    h1 {
+
+        font-size:
+            26px;
+    }
+
+
+    h2 {
+
+        font-size:
+            11px;
+    }
+
+
+    .card {
+
+        padding:
+            16px;
+    }
+
+
+    .buttons button {
+
+        width:
+            100%;
+    }
+
+
+    #route {
+
+        font-size:
+            18px;
+    }
+}

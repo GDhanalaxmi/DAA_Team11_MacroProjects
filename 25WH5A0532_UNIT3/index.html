@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Interactive Traveling Salesperson Problem Dynamic Programming Visualizer">
+
+    <title>TSP Dynamic Programming Visualizer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- HEADER -->
+
+        <header>
+            <h1>Traveling Salesperson Problem</h1>
+
+            <h2>
+                Dynamic Programming Visualizer
+            </h2>
+        </header>
+
+
+        <!-- INTRODUCTION -->
+
+        <section class="card">
+
+            <h3>About This Project</h3>
+
+            <p>
+                This project demonstrates how
+                <strong>Dynamic Programming</strong>
+                can be used to solve the Traveling Salesperson
+                Problem (TSP) for four cities.
+            </p>
+
+            <p>
+                Enter the travel distances between cities and
+                click <strong>Update Matrix & Solve</strong>
+                to calculate a new optimal route.
+            </p>
+
+        </section>
+
+
+        <!-- DISTANCE MATRIX -->
+
+        <section class="card">
+
+            <h3>1. Distance Matrix</h3>
+
+            <p>
+                Enter the distance between each pair of cities.
+                The matrix is symmetric, so changing one distance
+                automatically represents the same distance in the
+                opposite direction.
+            </p>
+
+            <div id="distanceMatrix"></div>
+
+            <div class="matrix-note">
+                <strong>Note:</strong>
+                Diagonal values are fixed at 0 because the distance
+                from a city to itself is 0.
+            </div>
+
+            <button
+                class="update-button"
+                type="button"
+                onclick="updateMatrixAndSolve()">
+
+                Update Matrix & Solve
+
+            </button>
+
+            <div id="matrixMessage"></div>
+
+        </section>
+
+
+        <!-- CITY GRAPH -->
+
+        <section class="card">
+
+            <h3>2. City Network</h3>
+
+            <p>
+                The graph represents the possible connections
+                between the four cities.
+            </p>
+
+            <canvas
+                id="cityCanvas"
+                width="600"
+                height="400">
+
+                Your browser does not support the HTML canvas element.
+
+            </canvas>
+
+        </section>
+
+
+        <!-- DP STATE -->
+
+        <section class="card">
+
+            <h3>3. DP State Transition</h3>
+
+            <p>
+                Follow the steps to see how the Dynamic Programming
+                states are calculated.
+            </p>
+
+            <div id="state">
+
+                <div>
+
+                    <div class="step-title">
+                        Ready to Start
+                    </div>
+
+                    <div>
+                        Click <strong>Next</strong> to begin.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <button
+                    type="button"
+                    onclick="previousStep()">
+
+                    ← Previous
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="nextStep()">
+
+                    Next →
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="autoPlay()">
+
+                    ▶ Auto Play
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="resetVisualization()">
+
+                    ↻ Reset
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- DP TABLE -->
+
+        <section class="card">
+
+            <h3>4. Dynamic Programming Table</h3>
+
+            <p>
+                Each row represents a completed DP state.
+                The table is generated progressively as
+                the algorithm runs.
+            </p>
+
+            <div id="dpTable"></div>
+
+        </section>
+
+
+        <!-- RESULT -->
+
+        <section class="card result">
+
+            <h3>5. Optimal Solution</h3>
+
+            <div id="route"></div>
+
+            <div id="cost"></div>
+
+        </section>
+
+
+        <!-- EXPLANATION -->
+
+        <section class="card">
+
+            <h3>How Dynamic Programming Solves TSP</h3>
+
+            <p>
+                The algorithm starts from city A and gradually
+                considers larger subsets of cities.
+            </p>
+
+            <br>
+
+            <p>
+                For every state, the algorithm checks possible
+                previous cities and calculates the travel cost.
+            </p>
+
+            <br>
+
+            <p>
+                The minimum cost is stored for each state,
+                avoiding repeated calculations.
+            </p>
+
+            <br>
+
+            <p>
+                <strong>DP State:</strong>
+                dp[visited set][current city]
+            </p>
+
+            <br>
+
+            <p>
+                After all four cities are visited, the algorithm
+                returns to city A and calculates the minimum
+                possible total cost.
+            </p>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            TSP Dynamic Programming Visualizer
+
+            <br>
+
+            <span>
+                Dynamic Programming • Algorithm Visualization • TSP
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
